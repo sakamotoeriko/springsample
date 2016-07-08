@@ -1,0 +1,32 @@
+maven tomcat的手顺
+1：下载最新tomcat7.0
+并修改tomcat-users.xml 如下
+<role rolename="admin"/>
+ <role rolename="manager"/>
+ <role rolename="manager-gui"/>
+ <role rolename="manager-script"/>
+ <user username="admin" password="admin" roles="admin,manager,manager-gui,manager-script"/>
+因为deploy时要用到这个账号把war或jar包copy到tomcat容器里。（jboss也是同样，否则会过不去，需要手动追加）
+在pom.xml中追加如下：
+<build>
+  		<pluginManagement>
+		  <plugins>
+			  <plugin>
+			         <groupId>org.apache.tomcat.maven</groupId>
+			         <artifactId>tomcat7-maven-plugin</artifactId>
+			         <version>2.2</version>
+			         <configuration>
+			         	<server>tomcat</server>
+			            <url>http://localhost:8080/manager/text</url>
+			            <username>admin</username>
+			        	<password>admin</password>
+			        	<path>/tomcatmaven</path>  
+			        </configuration>
+			   </plugin>
+		  </plugins>
+		</pluginManagement>
+    <finalName>tomcatmaven</finalName>
+  </build>
+  
+  用maven install 生成jar或war后，执行mvn tomcat7:redeploy
+
