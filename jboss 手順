@@ -9,3 +9,22 @@ maven jboss
 
 然后新建工程时，选archetype--->jboss-javaee6-webapp-archetype - javaee6 war project with sample code
 会自动生成jboss的工程，然后编译看能否正常运行。
+
+上述有问题时， 重新装一下jboss服务器
+1：下载jboss-eap-7.0.0-installer.jar
+    双击安装，并设定好用户名和初始密码
+2：在pom中务必加入以下设定， 
+    <plugin>
+            <groupId>org.jboss.as.plugins</groupId>
+            <artifactId>jboss-as-maven-plugin</artifactId>
+            <version>7.0.2.Final</version>
+            <configuration>
+		        <hostname>localhost</hostname>
+		        <username>admin</username>
+		        <password>admin</password>
+		        <port>9999</port>
+    		</configuration>
+    </plugin>
+   否则一直会报错
+   Could not connect to remote://localhost:9999 
+   
