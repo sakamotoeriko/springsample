@@ -1,0 +1,11 @@
+1: 在 eclipse 的maven插件（设定-->maven-->archetype）中追加jboss的 category
+jboss remote category 追加
+填入以下信息：
+catalogfile:
+http://repo1.maven.org/maven2/archetype-catalog.xml
+
+descripe:
+maven jboss
+
+然后新建工程时，选archetype--->jboss-javaee6-webapp-archetype - javaee6 war project with sample code
+会自动生成jboss的工程，然后编译看能否正常运行。
