@@ -28,3 +28,4 @@ maven jboss
    否则一直会报错
    Could not connect to remote://localhost:9999 
    
+   curl -v -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"id":"1000","name":"xiaoyun","content":"sample"}' http://127.0.0.1:8080/jbspringapi/rest/jsonpost/
