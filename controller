@@ -1,0 +1,48 @@
+package piptest;
+
+import java.util.HashMap;
+
+import piptest.OcrManageClass;
+//コントローラスレッドクラス
+public class ocrControllerClass implements Runnable{
+
+	private String name;
+	public ocrControllerClass(String name) {
+	     this.name = name;
+	   }
+
+	//実行処理
+	public void run() {
+	      try {
+	           //Thread.sleep(1000);
+	    	  System.out.println("Thread:"+name+"------------");
+	    	  HashMap<Integer,String> ocrResult = OcrManageClass.getInstance().RunOcr();
+	    	  //System.out.println("Thread:"+name+"----"+ocrResult+"-------");
+	    	  System.out.println("Thread:"+name+"----"+ocrResult.get(0)+"-------");
+	    	  if(ocrResult.get(1).toString().equals(ocrConst.OCR_SUCCESS)){
+	    		  //終了処理
+	    		  OcrManageClass.getInstance().EndOcr();
+	    	  }
+	      } catch (Exception e) { 
+	    	  //InterruptedException
+	    	  System.out.println(e.getMessage());
+	      }
+	      	
+	  }
+	
+	//TEST
+	public static void main(String[] args)
+	{
+		 try{
+		    	for(int i=0; i<5; i++){
+					ocrControllerClass cdt1 = new ocrControllerClass("thread:"+String.valueOf(i)+"------");
+				    Thread t1 = new Thread(cdt1);
+				    t1.start();
+				    if(i>2){
+				    	Thread.sleep(9000);
+				    }
+		    	}
+		  }catch(Exception e){	
+		  }
+	}
+}
