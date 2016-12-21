@@ -1,0 +1,92 @@
+package piptest;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.HashMap;
+
+public class OcrManageClass {
+	//シングルトンクラス
+	//カウンター
+	public final static String ERROR_SYSTEM_BUSY_MSG="ただいま、アクセスが集中しております、時間をおいて再度送信ください。";
+
+	private int nCount = 0;
+	
+	private OcrManageClass() {
+	}
+	//
+	private static final class InstanceHolder{
+		private static final OcrManageClass instance = new OcrManageClass();
+	}
+	//管理プロセスオブジェクトの取得
+	public static OcrManageClass getInstance() {
+		return InstanceHolder.instance;
+	}
+
+	//ロック処理
+	private boolean lockcount(){
+		 synchronized(this){
+			 if(nCount>=ocrConst.MAX_COUNT){
+				 return false;
+			 }else{
+				 nCount = nCount+1;
+				 System.out.println(nCount);
+			 }
+			 return true;
+		 }
+	}
+	
+	//アンロック処理
+	private void unlockcount(){
+		synchronized(this){
+			if(nCount>0){
+				System.out.println("unlock"+nCount);
+				nCount = nCount-1;
+			}
+		}
+	}
+
+	//OCR 処理
+	public HashMap<Integer,String> RunOcr(){
+		//ロック処理
+		HashMap<Integer,String> map = new HashMap<Integer,String>();
+		if(!lockcount()) {
+			map.put(0, ERROR_SYSTEM_BUSY_MSG);
+			map.put(1, ocrConst.ERROR_LOCK);
+			return map;
+		}
+
+		ProcessBuilder pb = new ProcessBuilder("ping", "-c", "6", "127.0.0.1");
+		//ProcessBuilder pb = new ProcessBuilder("java","-cp", "/Users/ice/Documents/workspace/cliendstream/bin/cliendstream/cliendstreamtest.class");
+		String ocrStr = "";
+		try {
+		  Process p = pb.start();
+		  // ping が完了するのを待つ
+		  p.waitFor();
+		  //p.exitValue();
+		  // 実行結果を取得するストリームの種別を出力
+		  //System.out.println(pb.redirectInput());
+		  try (BufferedReader br = new BufferedReader(
+		          new InputStreamReader(p.getInputStream()))) {
+		    // ping結果の出力
+		    for(String line = br.readLine(); line != null; line = br.readLine()) {
+		    	//System.out.println(line);
+		    	ocrStr+=line;
+		    }
+		    map.put(0, ocrStr);
+		    map.put(1, String.valueOf(p.exitValue()));
+		  }
+		} catch (IOException | InterruptedException e) {
+		  // 例外ハンドリング処理
+			map.put(0, ocrStr);
+		    map.put(1, ocrConst.ERROR_OCR);
+			return map;
+		}
+		
+		return map;
+	} 
+	
+	//OCR完了処理
+	public void EndOcr(){
+		unlockcount();
+	}
+}
